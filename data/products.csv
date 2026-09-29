@@ -1,0 +1,17 @@
+product_id,name,price,brand_id,category_id,vendor_id
+P1,Banana Chips,120,B1,C1,V1
+P2,Banana Protein Shake,180,B2,C2,V2
+P3,Banana Face Wash,299,B3,C3,V4
+P4,Banana Bread Mix,220,B2,C1,V2
+P5,Banana Hair Mask,450,B3,C3,V4
+P6,Peanut Butter Crunchy,250,B2,C1,V2
+P7,Oat Cookies,90,B1,C1,V1
+P8,Cold Coffee Can,110,B2,C2,V2
+P9,Green Tea Pack,200,B1,C2,V1
+P10,Vitamin C Serum,650,B3,C3,V4
+P11,Wireless Earbuds,1999,B4,C4,V3
+P12,Smart Watch,3499,B4,C4,V3
+P13,Air Fryer,4200,B5,C5,V3
+P14,Steel Water Bottle,450,B5,C5,V4
+P15,Cotton T-Shirt,599,B6,C6,V4
+P16,Denim Jacket,2499,B6,C6,V4
