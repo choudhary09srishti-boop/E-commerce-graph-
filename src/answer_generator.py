@@ -9,13 +9,13 @@ log = logging.getLogger(__name__)
 
 NOT_FOUND_MESSAGE = "I could not find this in the knowledge graph."
 
-SYSTEM_PROMPT = f"""You answer questions using only the graph data provided.
+SYSTEM_PROMPT = """You answer questions using only the graph data provided.
 
 Rules:
+- The data was retrieved from the graph for this exact question, so answer from it.
 - Use only the rows in the data. Do not use outside knowledge.
 - Do not guess or add details that are not in the rows.
 - Keep the answer short and clear.
-- If the rows do not answer the question, reply exactly: {NOT_FOUND_MESSAGE}
 """
 
 
@@ -53,4 +53,5 @@ if __name__ == "__main__":
         print("\nQ:", question)
         query = question_to_cypher(question)
         rows = run_query(query) if query else []
+        print("Rows retrieved:", len(rows))
         print("A:", rows_to_answer(question, rows))
