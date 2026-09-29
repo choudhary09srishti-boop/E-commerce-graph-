@@ -18,6 +18,8 @@ Rules:
 - Use only the labels, relationships and properties in the schema.
 - Compare text case-insensitively: toLower(x.name) CONTAINS toLower('value').
 - Give every returned value a readable alias, for example p.name AS product.
+- Always return the entities named in the question as columns too (for example the
+  customer, brand or vendor name), so every row explains itself.
 - End with LIMIT 50.
 - If the question cannot be answered with this schema, output exactly: NO_QUERY
 
@@ -26,7 +28,14 @@ Example query:
 MATCH (v:Vendor)-[:SUPPLIES]->(p:Product)-[:MADE_BY]->(b:Brand)
 WHERE toLower(b.name) CONTAINS toLower('FreshFarm')
 AND toLower(v.name) CONTAINS toLower('GreenLeaf Traders')
-RETURN p.name AS product
+RETURN p.name AS product, b.name AS brand, v.name AS vendor
+LIMIT 50
+
+Example question: What did Priya Nair order?
+Example query:
+MATCH (c:Customer)-[:PLACED]->(o:Order)-[r:CONTAINS]->(p:Product)
+WHERE toLower(c.name) CONTAINS toLower('Priya Nair')
+RETURN c.name AS customer, o.order_id AS order_id, p.name AS product, r.quantity AS quantity
 LIMIT 50
 """
 
