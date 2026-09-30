@@ -34,7 +34,7 @@ def check_query_is_safe(query):
             raise ValueError(f"Not allowed in a read-only query: {word}")
 
 
-def run_query(query):
+def run_query(query, max_rows=MAX_ROWS):
     """Check the query, run it in read-only mode, and return rows as a list of dicts."""
     check_query_is_safe(query)
 
@@ -48,7 +48,7 @@ def run_query(query):
         driver.close()
 
     log.info("Query returned %d rows", len(rows))
-    return rows[:MAX_ROWS]
+    return rows[:max_rows]
 
 
 if __name__ == "__main__":
@@ -70,4 +70,3 @@ if __name__ == "__main__":
             run_query(bad_query)
         except ValueError as error:
             print("Blocked:", error)
-            

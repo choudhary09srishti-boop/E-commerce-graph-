@@ -1,6 +1,12 @@
 import streamlit as st
 
 from main import SAMPLE_QUESTIONS, setup_logging
+from src.graph_view import (
+    build_answer_dot,
+    build_data_dot,
+    build_schema_dot,
+    load_graph_rows,
+)
 from src.pipeline import ask
 
 setup_logging()
@@ -8,6 +14,12 @@ setup_logging()
 st.set_page_config(page_title="E-commerce Knowledge Graph", page_icon="🛒", layout="wide")
 st.title("E-commerce Knowledge Graph Q&A")
 st.caption("Question → LLM → Cypher → Neo4j → LLM → Answer. Answers come only from the graph.")
+
+
+@st.cache_data
+def get_graph_rows():
+    return load_graph_rows()
+
 
 # Sidebar buttons fill the question box with a sample question.
 clicked_sample = None
@@ -20,24 +32,44 @@ with st.sidebar:
 if clicked_sample:
     st.session_state["question"] = clicked_sample
 
-question = st.text_input("Ask a question about products, brands, vendors, customers or orders", key="question")
-ask_clicked = st.button("Ask", type="primary")
+ask_tab, graph_tab = st.tabs(["Ask a question", "Knowledge graph"])
 
-if (ask_clicked or clicked_sample) and question.strip():
-    with st.spinner("Thinking..."):
-        result = ask(question.strip())
+with ask_tab:
+    question = st.text_input(
+        "Ask a question about products, brands, vendors, customers or orders", key="question"
+    )
+    ask_clicked = st.button("Ask", type="primary")
 
-    st.subheader("1. Question")
-    st.write(result["question"])
+    if (ask_clicked or clicked_sample) and question.strip():
+        with st.spinner("Thinking..."):
+            result = ask(question.strip())
 
-    st.subheader("2. Cypher query written by the LLM")
-    st.code(result["cypher"] or "NO_QUERY", language="cypher")
+        st.subheader("1. Question")
+        st.write(result["question"])
 
-    st.subheader(f"3. Rows retrieved from Neo4j ({len(result['rows'])})")
-    if result["rows"]:
-        st.dataframe(result["rows"], use_container_width=True)
-    else:
-        st.info("No rows returned.")
+        st.subheader("2. Cypher query written by the LLM")
+        st.code(result["cypher"] or "NO_QUERY", language="cypher")
 
-    st.subheader("4. Answer (based only on the rows above)")
-    st.success(result["answer"])
+        st.subheader(f"3. Rows retrieved from Neo4j ({len(result['rows'])})")
+        if result["rows"]:
+            st.dataframe(result["rows"], use_container_width=True)
+        else:
+            st.info("No rows returned.")
+
+        st.subheader("4. Answer (based only on the rows above)")
+        st.success(result["answer"])
+
+        st.subheader("5. Graph behind this answer")
+        answer_dot = build_answer_dot(get_graph_rows(), result["rows"])
+        if answer_dot:
+            st.caption("Red = entities in the answer. Grey/coloured = connected nodes for context.")
+            st.graphviz_chart(answer_dot, use_container_width=True)
+        else:
+            st.info("This answer has no graph nodes to draw (no rows, or only counts).")
+
+with graph_tab:
+    st.subheader("Graph schema")
+    st.graphviz_chart(build_schema_dot(), use_container_width=True)
+
+    st.subheader("Full graph data (banana products highlighted in yellow)")
+    st.graphviz_chart(build_data_dot(get_graph_rows()), use_container_width=True)
