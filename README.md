@@ -11,7 +11,7 @@ User Question -> LLM -> Cypher Query -> Neo4j (read-only) -> Retrieved Rows -> L
 - Python 3.10+
 - Neo4j AuraDB Free (cloud graph database)
 - Groq API (model: `openai/gpt-oss-120b`)
-- Streamlit (web UI)
+- Streamlit (web UI, with graph visualisation)
 
 ## Knowledge graph
 
@@ -34,11 +34,13 @@ User Question -> LLM -> Cypher Query -> Neo4j (read-only) -> Retrieved Rows -> L
 
 The dataset (`data/*.csv`) has 48 nodes and 77 relationships. The word **banana** appears exactly 5 times, in the names of 5 products (Banana Chips, Banana Protein Shake, Banana Face Wash, Banana Bread Mix, Banana Hair Mask).
 
+The dataset is synthetic sample data created for this assignment. The loader is driven by the CSV files in `data/`, so a real dataset can be used by replacing them with files in the same column format.
+
 ## Project structure
 
 ```
 .
-├── app.py                  Streamlit web UI
+├── app.py                  Streamlit web UI (Q&A + graph views)
 ├── main.py                 Command-line interface
 ├── requirements.txt
 ├── .env.example            Template for secrets
@@ -52,6 +54,7 @@ The dataset (`data/*.csv`) has 48 nodes and 77 relationships. The word **banana*
     ├── query_runner.py     Safety check + read-only query execution
     ├── text_to_cypher.py   LLM: question -> Cypher
     ├── answer_generator.py LLM: rows -> grounded answer
+    ├── graph_view.py       Builds the graph drawings for the UI
     └── pipeline.py         Full flow with error handling
 ```
 
@@ -113,6 +116,10 @@ Start the web UI:
 streamlit run app.py
 ```
 
+The UI has two tabs:
+- **Ask a question**: shows the question, the Cypher written by the LLM, the rows retrieved from Neo4j, the grounded answer, and a graph of the entities behind that answer.
+- **Knowledge graph**: shows the graph schema and the full graph data, with the 5 banana products highlighted.
+
 Or use the command line:
 
 ```powershell
@@ -141,7 +148,7 @@ See [sample_results.md](sample_results.md) for 9 questions with the generated Cy
 
 ## Verifying the banana requirement
 
-Ask "Which products contain banana?" in the app or CLI. It returns exactly 5 products. The loader also prints the banana count after every load.
+Ask "Which products contain banana?" in the app or CLI. It returns exactly 5 products. The loader also prints the banana count after every load, and the Knowledge graph tab shows the 5 banana products in yellow.
 
 ## Logging and errors
 
@@ -150,5 +157,5 @@ Logs are written to `logs/app.log`. Database errors, LLM errors and blocked quer
 ## Known limitations
 
 - LLM-written Cypher can be wrong for complex multi-hop questions. The generated query is shown in the UI so it can be inspected.
-- The dataset is small and made up for this assignment.
+- The dataset is small and synthetic.
 - Neo4j connections use the `certifi` CA bundle, which fixes TLS certificate errors on some Windows machines.
