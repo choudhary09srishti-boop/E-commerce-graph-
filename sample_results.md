@@ -28,7 +28,7 @@ The products that contain banana are:
 ```cypher
 MATCH (p:Product)
 WHERE toLower(p.name) CONTAINS toLower('banana')
-RETURN count(p) AS total_products
+RETURN count(p) AS product_count
 LIMIT 50
 ```
 
@@ -36,7 +36,7 @@ LIMIT 50
 
 **Answer:**
 
-The provided data does not specify how many of the products contain banana.
+5
 
 ## 3. Which products from brand NutriBite are supplied by Sharma Wholesale?
 
@@ -76,10 +76,10 @@ LIMIT 50
 
 Aarav Mehta ordered:
 
-- **Banana Chips** – 2 units (order O1)  
-- **Green Tea Pack** – 1 unit (order O1)  
-- **Banana Protein Shake** – 3 units (order O4)  
-- **Peanut Butter Crunchy** – 1 unit (order O4)
+- 2 Banana Chips  
+- 1 Green Tea Pack  
+- 3 Banana Protein Shake  
+- 1 Peanut Butter Crunchy
 
 ## 5. Which vendor supplies the Smart Watch?
 
@@ -111,13 +111,13 @@ LIMIT 50
 
 **Answer:**
 
-The customers who bought TechNova products are **Rohan Gupta** and **Kabir Singh**.
+Rohan Gupta and Kabir Singh.
 
 ## 7. How many products are in each category?
 
 **Cypher:**
 ```cypher
-MATCH (p:Product)-[:BELONGS_TO]->(c:Category)
+MATCH (c:Category)<-[:BELONGS_TO]-(p:Product)
 RETURN c.name AS category, count(p) AS product_count
 LIMIT 50
 ```
