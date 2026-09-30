@@ -15,6 +15,7 @@ Rules:
 - The data was retrieved from the graph for this exact question, so answer from it.
 - Use only the rows in the data. Do not use outside knowledge.
 - Do not guess or add details that are not in the rows.
+- If a row holds a count or a total, that number is the answer to a "how many" question. State it.
 - Keep the answer short and clear.
 """
 
@@ -45,6 +46,7 @@ if __name__ == "__main__":
 
     questions = [
         "Which products contain banana?",
+        "How many products contain banana?",
         "What did Aarav Mehta order?",
         "Which products from brand GlowUp are supplied by GreenLeaf Traders?",
         "Who is the prime minister of India?",
